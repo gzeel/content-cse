@@ -18,10 +18,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-          cache: "npm"
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Quartz and Dependencies
+        run: |
+          npm init -y
+          npm install quartz-cli @quartz/cli @quartz/core @quartz/plugin-transformer-markdown
+          npm install
 
       - name: Build Quartz Site
         run: npx quartz build
@@ -32,4 +34,3 @@ jobs:
           folder: public # The output folder from Quartz build
           branch: gh-pages # The branch to deploy to
           clean: true # Automatically remove deleted files from the deployment branch
-
