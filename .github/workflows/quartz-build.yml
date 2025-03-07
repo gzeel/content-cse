@@ -13,24 +13,36 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Needed for correct git history
+          path: content # Check out your content into a subdirectory
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
 
-      - name: Install Quartz and Dependencies
+      - name: Clone Quartz
         run: |
-          npm init -y
-          npm install quartz-cli @quartz/cli @quartz/core @quartz/plugin-transformer-markdown
+          git clone https://github.com/jackyzha0/quartz.git
+
+      - name: Setup and Configure Quartz
+        run: |
+          cd quartz
           npm install
 
+          # Copy your content to the Quartz content directory
+          rm -rf content
+          cp -r ../content/* .
+          cp -r ../content/.* . 2>/dev/null || true
+
       - name: Build Quartz Site
-        run: npx quartz build
+        run: |
+          cd quartz
+          npx quartz build
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: public # The output folder from Quartz build
+          folder: quartz/public # The output folder from Quartz build
           branch: gh-pages # The branch to deploy to
           clean: true # Automatically remove deleted files from the deployment branch
+          token: ${{ secrets.GITHUB_TOKEN }}
