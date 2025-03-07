@@ -52,7 +52,7 @@ ssh-ed25519 AAAAHierstaateensupergeheimesshed25519key/blabla student@lokale-lapt
 
 Let op: het bestand /home/student/.ssh/authorized_keys moet alleen write rechten voor de owner hebben (tip: chmod 400 authorized_keys)
 
-Als laatste upload je de azure publieke key naar Azure. Zie hiervoor https://learn.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal en dan 'Upload a ssh key'.
+Als laatste upload je de azure publieke key naar Azure. Zie hiervoor <https://learn.microsoft.com/en-us/azure/virtual-machines/ssh-keys-portal> en dan 'Upload a ssh key'.
 
 ## Gitlab
 
@@ -71,7 +71,7 @@ git clone https://gitlab.windesheim.nl/fe2157786/ict-ids-iac.git
 Daarna maak je in de root van je homedir een bestand met de naam .netrc aan (let op de punt)
 Daar zet je de volgende informatie in:
 
-```
+```bash
 machine gitlab.windesheim.nl
 login oauth2
 password jouwpersonalaccesstoken
