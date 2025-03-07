@@ -39,14 +39,22 @@ jobs:
           cd quartz
           npx quartz build
 
-      - name: Deploy to GitHub Pages
+      - name: Commit HTML to Repository
         run: |
-          cd quartz/public
-          git init
+          # Move the generated files to a docs directory in the repository root
+          mkdir -p ../content/docs
+          cp -r quartz/public/* ../content/docs/
+
+          # Go to the content repository directory
+          cd ../content
+
+          # Configure git
           git config user.name "GitHub Actions"
           git config user.email "github-actions@github.com"
-          git add .
-          git commit -m "Deploy Quartz site"
-          git branch -M gh-pages
-          git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
-          git push -f origin gh-pages
+
+          # Add and commit the changes
+          git add docs/
+          git commit -m "Add generated HTML files [skip ci]" || echo "No changes to commit"
+
+          # Push to the repository
+          git push https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
