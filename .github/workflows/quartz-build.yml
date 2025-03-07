@@ -40,9 +40,13 @@ jobs:
           npx quartz build
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: quartz/public # The output folder from Quartz build
-          branch: gh-pages # The branch to deploy to
-          clean: true # Automatically remove deleted files from the deployment branch
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd quartz/public
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Deploy Quartz site"
+          git branch -M gh-pages
+          git remote add origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          git push -f origin gh-pages
