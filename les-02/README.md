@@ -1,4 +1,4 @@
-# Les 2 - Hello, Terraform!
+# Les 2 - Hello, Terraform
 
 Leerdoelen:
 
@@ -199,7 +199,7 @@ resource "esxi_guest" "vmtest" {
 Je ziet ook de regel ovf_source staan. Dit is een verwijzing naar een image wat Terraform moet gebruiken om de VM mee aan te maken. Terraform zal deze .ova file omzetten in een disk voor de VM. De VM gebruikt dit uiteindelijk als boot en data disk. In dit image zit een complete Ubuntu 24.04 server VM.
 
 Voor Azure heb je in ieder geval blokjes nodig voor je resource group, een vnet, een subnet, de nic, en de vm zelf.
-Voorbeelden kun je vinden in de repository van de provider : https://github.com/hashicorp/terraform-provider-azurerm/tree/main/examples/virtual-machines
+Voorbeelden kun je vinden in de repository van de provider : <https://github.com/hashicorp/terraform-provider-azurerm/tree/main/examples/virtual-machines>
 
 #### Uitvoeren
 
