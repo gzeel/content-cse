@@ -32,3 +32,4 @@ jobs:
           folder: public # The output folder from Quartz build
           branch: gh-pages # The branch to deploy to
           clean: true # Automatically remove deleted files from the deployment branch
+
