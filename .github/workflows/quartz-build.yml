@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Needed for correct git history
-          path: content # Check out your content into a subdirectory
+          token: ${{ github.token }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -22,39 +22,37 @@ jobs:
 
       - name: Clone Quartz
         run: |
-          git clone https://github.com/jackyzha0/quartz.git
+          git clone https://github.com/jackyzha0/quartz.git temp_quartz
 
       - name: Setup and Configure Quartz
         run: |
-          cd quartz
+          cd temp_quartz
           npm install
 
-          # Copy your content to the Quartz content directory
-          rm -rf content
-          cp -r ../content/* .
-          cp -r ../content/.* . 2>/dev/null || true
+          # Copy your content files to the Quartz content directory
+          mkdir -p content
+          cp -r ../* content/ 2>/dev/null || true
+          # Avoid copying temp_quartz folder into itself
+          rm -rf content/temp_quartz
 
       - name: Build Quartz Site
         run: |
-          cd quartz
+          cd temp_quartz
           npx quartz build
 
       - name: Commit HTML to Repository
         run: |
-          # Move the generated files to a docs directory in the repository root
-          mkdir -p ../content/docs
-          cp -r quartz/public/* ../content/docs/
+          # Create docs directory if it doesn't exist
+          mkdir -p docs
 
-          # Go to the content repository directory
-          cd ../content
+          # Copy the generated files
+          cp -r temp_quartz/public/* docs/
 
           # Configure git
           git config user.name "GitHub Actions"
           git config user.email "github-actions@github.com"
 
-          # Add and commit the changes
+          # Stage, commit, and push the changes
           git add docs/
           git commit -m "Add generated HTML files [skip ci]" || echo "No changes to commit"
-
-          # Push to the repository
-          git push https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+          git push
