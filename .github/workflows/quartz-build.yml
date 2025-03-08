@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Needed for correct git history
-          token: ${{ github.token }}
+          token: ${{ secrets.PAT }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -55,4 +55,4 @@ jobs:
           # Stage, commit, and push the changes
           git add docs/
           git commit -m "Add generated HTML files [skip ci]" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
