@@ -35,95 +35,12 @@ jobs:
           # Avoid copying temp_quartz folder into itself
           rm -rf content/temp_quartz
 
-          # Create custom configuration file to embed CSS and change font
-          cat > quartz.config.ts << 'EOF'
-          import { QuartzConfig } from "./quartz/cfg"
-          import * as Plugin from "./quartz/plugins"
-
-          const config: QuartzConfig = {
-            configuration: {
-              pageTitle: "Your Site Title",
-              enableSPA: true,
-              enablePopovers: true,
-              analytics: {
-                provider: "plausible",
-              },
-              baseUrl: "quartz.example.com",
-              ignorePatterns: ["private", "templates", ".obsidian"],
-              defaultDateType: "modified",
-              theme: {
-                typography: {
-                  header: "Poppins, sans-serif", // Change header font
-                  body: "Roboto, sans-serif",    // Change body font
-                  code: "JetBrains Mono, monospace", // Change code font
-                },
-                colors: {
-                  // You can customize colors here
-                  lightMode: {
-                    light: "#fafafa",
-                    lightgray: "#e5e5e5",
-                    gray: "#b8b8b8",
-                    darkgray: "#4e4e4e",
-                    dark: "#2b2b2b",
-                    secondary: "#284b63",
-                    tertiary: "#84a59d",
-                    highlight: "rgba(143, 159, 169, 0.15)",
-                  },
-                  darkMode: {
-                    light: "#161618",
-                    lightgray: "#393639",
-                    gray: "#646464",
-                    darkgray: "#d4d4d4",
-                    dark: "#ebebec",
-                    secondary: "#7b97aa",
-                    tertiary: "#84a59d",
-                    highlight: "rgba(143, 159, 169, 0.15)",
-                  },
-                },
-              },
-            },
-            plugins: {
-              transformers: [
-                Plugin.FrontMatter(),
-                Plugin.TableOfContents(),
-                Plugin.CreatedModifiedDate({
-                  priority: ["frontmatter", "filesystem"],
-                }),
-                Plugin.SyntaxHighlighting(),
-                Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: true }),
-                Plugin.GitHubFlavoredMarkdown(),
-                Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
-                Plugin.Latex({ renderEngine: "katex" }),
-                Plugin.Description(),
-              ],
-              filters: [Plugin.RemoveDrafts()],
-              emitters: [
-                Plugin.AliasRedirects(),
-                Plugin.ComponentResources({ fontOrigin: "googleFonts" }),
-                Plugin.ContentPage({
-                  inlineCss: true,  // Embed CSS directly in HTML
-                  inlineJs: true,   // Embed JS directly in HTML
-                  pageByPage: true  // Process each page separately
-                }),
-                Plugin.FolderPage(),
-                Plugin.TagPage(),
-                Plugin.ContentIndex({
-                  enableSiteMap: true,
-                  enableRSS: true,
-                }),
-              ],
-            },
-          }
-
-          export default config
-          EOF
-
       - name: Build Quartz Site
         run: |
           cd temp_quartz
           npx quartz build
 
-      - name: Commit HTML to Repository
+      - name: Commit HTML to Content Branch
         run: |
           # Create docs directory if it doesn't exist
           mkdir -p docs
@@ -135,7 +52,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "github-actions@github.com"
 
+          # Create and checkout a new branch called 'content'
+          git checkout -B content
+
           # Stage, commit, and push the changes
           git add docs/
           git commit -m "Add generated HTML files [skip ci]" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+          git push https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository }}.git HEAD:content --force
