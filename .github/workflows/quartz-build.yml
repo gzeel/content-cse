@@ -35,6 +35,77 @@ jobs:
           # Avoid copying temp_quartz folder into itself
           rm -rf content/temp_quartz
 
+          # Create a Tokyo Night theme configuration
+          mkdir -p styles
+          cat > styles/tokyo-night.scss << 'EOL'
+          @use "sass:color";
+
+          // Tokyo Night theme colors
+          :root {
+            --tokyo-night-bg: #1a1b26;
+            --tokyo-night-fg: #a9b1d6;
+            --tokyo-night-accent: #7aa2f7;
+            --tokyo-night-accent-2: #bb9af7;
+            --tokyo-night-muted: #565f89;
+            --tokyo-night-highlight: #292e42;
+            --tokyo-night-link: #7dcfff;
+            --tokyo-night-code-bg: #24283b;
+          }
+
+          [saved-theme="dark"] {
+            --background: var(--tokyo-night-bg);
+            --lightgray: var(--tokyo-night-highlight);
+            --gray: var(--tokyo-night-muted);
+            --darkgray: var(--tokyo-night-fg);
+            --text: var(--tokyo-night-fg);
+            --dark-text: var(--tokyo-night-fg);
+            --secondary: var(--tokyo-night-accent-2);
+            --tertiary: var(--tokyo-night-accent);
+            --highlight: var(--tokyo-night-accent);
+            --link: var(--tokyo-night-link);
+            --headers: var(--tokyo-night-accent);
+            --code-bg: var(--tokyo-night-code-bg);
+          }
+          EOL
+
+          # Update quartz.config.ts to use the new theme
+          sed -i 's/style: "default",/style: "tokyo-night",/g' quartz.config.ts
+          sed -i 's/allowedStyles: \["default"\],/allowedStyles: ["default", "tokyo-night"],/g' quartz.config.ts
+
+          # Create a custom component configuration to disable header and footer
+          cat > quartz.layout.ts << 'EOL'
+          import { PageLayout, SharedLayout } from "./quartz/cfg"
+          import * as Component from "./quartz/components"
+
+          // This is the layout configuration for your Quartz site
+          export const sharedLayout: SharedLayout = {
+            head: Component.Head(),
+            header: [], // Empty array disables the header
+            footer: [], // Empty array disables the footer
+          }
+
+          export const defaultLayout: PageLayout = {
+            beforeBody: [
+              Component.Breadcrumbs(),
+              Component.ArticleTitle(),
+              Component.ContentMeta(),
+              Component.TagList(),
+            ],
+            left: [
+              Component.PageTitle(),
+              Component.MobileOnly(Component.Spacer()),
+              Component.Search(),
+              Component.Darkmode(),
+              Component.DesktopOnly(Component.Explorer()),
+            ],
+            right: [
+              Component.Graph(),
+              Component.DesktopOnly(Component.TableOfContents()),
+              Component.Backlinks(),
+            ],
+          }
+          EOL
+
       - name: Build Quartz Site
         run: |
           cd temp_quartz
